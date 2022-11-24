@@ -77,6 +77,27 @@ module ido::ido {
         ido.base_price = base_price;
     }
 
+
+    public entry fun set_time<SaleCoin, RaiseCoin>(
+        ido: &mut IDO<SaleCoin, RaiseCoin>,
+        manage_cap: &ManageCapability<SaleCoin, RaiseCoin>,
+        after_epoch: u64,
+        ctx: &mut TxContext) {
+        assert!(after_epoch > 0, EGtZero);
+        let ido_id = object::id(ido);
+        assert!(manage_cap.ido_id == ido_id, ENotManage);
+
+        let now = tx_context::epoch(ctx);
+        assert!(now < ido.start_time, ENotStart);
+
+        ido.start_time = now + after_epoch;
+        ido.end_time =now + after_epoch + 7;
+        ido.start_claim =now + after_epoch + 8;
+        ido.end_claim = now + after_epoch + 10;
+    }
+
+
+
     public entry fun withdraw_raise<SaleCoin, RaiseCoin>(
         ido: &mut IDO<SaleCoin, RaiseCoin>,
         manage_cap: &ManageCapability<SaleCoin, RaiseCoin>,
